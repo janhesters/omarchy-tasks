@@ -20,6 +20,8 @@ Install Taskwarrior and its terminal UI through Omarchy:
 omarchy pkg add task taskwarrior-tui
 ```
 
+The plugin also uses `jq` to serialize Taskwarrior output. Omarchy includes it by default.
+
 ## Install
 
 ```bash
