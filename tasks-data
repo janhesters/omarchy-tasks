@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+# Return the Taskwarrior summary consumed by BarWidget.qml.
+
+set -uo pipefail
+
+if ! command -v task >/dev/null 2>&1; then
+  jq -cn '{
+    available: false,
+    total: 0,
+    actionable: 0,
+    tooltip: "Taskwarrior is not installed. Install it with: omarchy pkg add task taskwarrior-tui"
+  }'
+  exit 0
+fi
+
+normalize_count() {
+  case "${1:-}" in
+    ''|*[!0-9]*) printf '0' ;;
+    *) printf '%s' "$1" ;;
+  esac
+}
+
+actionable_raw=$(task rc.color=off status:pending due.before:tomorrow count 2>/dev/null || printf '0')
+total_raw=$(task rc.color=off status:pending count 2>/dev/null || printf '0')
+actionable=$(normalize_count "$actionable_raw")
+total=$(normalize_count "$total_raw")
+
+list=$(task \
+  rc.color=off \
+  rc.verbose=nothing \
+  rc.defaultwidth=0 \
+  rc.report.omarchy.description=Omarchy \
+  rc.report.omarchy.columns=due.relative,description.count \
+  rc.report.omarchy.labels=Due,Task \
+  rc.report.omarchy.sort=urgency- \
+  status:pending limit:10 omarchy 2>/dev/null || true)
+
+if [[ -n $list ]]; then
+  tooltip="$total pending | $actionable due today/overdue"$'\n\n'"$list"
+else
+  tooltip="No pending tasks"
+fi
+
+jq -cn \
+  --argjson total "$total" \
+  --argjson actionable "$actionable" \
+  --arg tooltip "$tooltip" \
+  '{available: true, total: $total, actionable: $actionable, tooltip: $tooltip}'
