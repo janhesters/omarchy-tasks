@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.janhesters.tasks",
+  "name": "Omarchy Tasks",
+  "version": "2.0.0",
+  "author": "Jan Hesters",
+  "license": "MIT",
+  "description": "Show actionable Taskwarrior tasks in the Omarchy bar.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Tasks",
+    "description": "Show due and pending Taskwarrior tasks.",
+    "category": "Productivity",
+    "allowMultiple": false,
+    "defaultSection": "center",
+    "schema": [
+      {
+        "key": "showWhenEmpty",
+        "type": "boolean",
+        "label": "Show when empty",
+        "description": "Keep a dimmed tasks icon in the bar when no tasks are pending.",
+        "defaultValue": true
+      },
+      {
+        "key": "refreshIntervalSec",
+        "type": "integer",
+        "label": "Refresh interval (seconds)",
+        "min": 10,
+        "max": 3600,
+        "step": 10,
+        "defaultValue": 60
+      }
+    ]
+  }
+}

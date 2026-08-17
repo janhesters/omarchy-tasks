@@ -1,64 +1,63 @@
-# omarchy-tasks
+# See your Taskwarrior priorities in the Omarchy bar
 
-Show your [Taskwarrior](https://taskwarrior.org/) tasks on the [Omarchy](https://omarchy.org/) Waybar.
+Omarchy Tasks is a native Omarchy 4 shell plugin for Taskwarrior. It shows the number of actionable tasks in the bar, lists your next tasks on hover, and opens `taskwarrior-tui` with one click.
 
-A lightweight Waybar module that displays the number of **actionable** tasks
-(overdue + due today) in your bar. Hover to see what's next — your pending tasks
-ranked by Taskwarrior urgency — and click (or press <kbd>Super</kbd> + <kbd>T</kbd>)
-to open [`taskwarrior-tui`](https://github.com/kdheepak/taskwarrior-tui).
-
-![bar: a tasks icon with a count, tooltip listing upcoming tasks by due date]
+Your tasks stay in Taskwarrior. The plugin reads them through the `task` command and stores no separate data.
 
 ## What you get
 
-- **At-a-glance count** in the bar — overdue + due-today tasks, styled when urgent.
-- **Tooltip** — up to 10 upcoming tasks, ranked by urgency, with relative due times (`4h`, `1d`, `-2h` for overdue).
-- **One-click / one-key** access to the full `taskwarrior-tui` board.
+- A red count for overdue tasks and tasks due today.
+- A standard count when pending work has no immediate deadline.
+- Up to 10 pending tasks in the tooltip, ranked by Taskwarrior urgency.
+- One-click access to `taskwarrior-tui`.
+- A right-click refresh and an IPC refresh command for scripts.
 
 ## Requirements
 
-- [Omarchy](https://omarchy.org/) (Waybar + Hyprland)
-- `task` (Taskwarrior) and `taskwarrior-tui`
-- `jq`
+Install Taskwarrior and its terminal UI through Omarchy:
 
-On Omarchy: `omarchy pkg add task taskwarrior-tui` (jq ships by default).
+```bash
+omarchy pkg add task taskwarrior-tui
+```
 
 ## Install
 
 ```bash
-git clone https://github.com/janhesters/omarchy-tasks.git ~/dev/omarchy-tasks
-cd ~/dev/omarchy-tasks
-./install.sh
+omarchy plugin add https://github.com/janhesters/omarchy-tasks.git --enable
 ```
 
-The installer is **idempotent** and only touches `~/.config` and `~/.local/bin`:
-
-- installs `tasks-indicator` to `~/.local/bin/`
-- adds the `custom/tasks` module to `~/.config/waybar/config.jsonc`
-- appends styling to `~/.config/waybar/style.css`
-- adds a `Super + T` binding to `~/.config/hypr/bindings.conf`
-- restarts Waybar and reloads Hyprland
-
-## How it works
-
-`tasks-indicator` queries Taskwarrior and prints Waybar JSON:
-
-- **text** — `task status:pending due.before:tomorrow count` (overdue + today)
-- **tooltip** — your pending tasks, sorted by `urgency-`
-- **class** — `urgent` (something due/overdue), `pending`, or `clear`
-
-The module polls every 60s and also refreshes on `SIGRTMIN+12`, so you can
-force an immediate update after changing tasks:
+The widget starts in the center section. Move it with the standard Omarchy bar command:
 
 ```bash
-pkill -RTMIN+12 waybar
+omarchy bar move io.github.janhesters.tasks --section center --before omarchy.system-update
 ```
 
-## Uninstall
+## Use
 
-Remove the `custom/tasks` entry from `modules-center` and its definition in
-`config.jsonc`, delete the `#custom-tasks` rules from `style.css`, remove the
-`Super + T` line from `bindings.conf`, and `rm ~/.local/bin/tasks-indicator`.
+- Hover to see pending tasks ranked by urgency.
+- Left-click to open `taskwarrior-tui`.
+- Right-click to refresh now.
+
+The plugin refreshes every 60 seconds by default. You can change the interval or hide the empty-state icon in the Omarchy bar settings.
+
+Scripts can request an immediate refresh after changing a task:
+
+```bash
+omarchy-shell io.github.janhesters.tasks refresh
+```
+
+## Update or remove
+
+```bash
+omarchy plugin update io.github.janhesters.tasks
+omarchy plugin remove io.github.janhesters.tasks
+```
+
+Removing the plugin leaves your Taskwarrior data untouched.
+
+## Omarchy 3 migration
+
+Version 2 replaces the old Waybar module. It no longer edits Waybar CSS, installs a helper in `~/.local/bin`, or adds a Hyprland keybinding. Keep your existing Taskwarrior data and add the plugin with the command above.
 
 ## License
 
