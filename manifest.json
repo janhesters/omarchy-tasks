@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "id": "io.github.janhesters.tasks",
   "name": "Omarchy Tasks",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "author": "Jan Hesters",
   "license": "MIT",
-  "description": "Show actionable Taskwarrior tasks in the Omarchy bar.",
+  "description": "See due and overdue Taskwarrior counts in the bar, urgency-ranked tasks on hover, and taskwarrior-tui one click away.",
   "kinds": [
     "bar-widget"
   ],
@@ -14,7 +14,7 @@
   },
   "barWidget": {
     "displayName": "Tasks",
-    "description": "Show due and pending Taskwarrior tasks.",
+    "description": "Show Taskwarrior counts, with urgency-ranked tasks on hover.",
     "category": "Productivity",
     "allowMultiple": false,
     "defaultSection": "center",

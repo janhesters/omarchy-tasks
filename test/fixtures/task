@@ -1,0 +1,15 @@
+#!/bin/bash
+
+case " $* " in
+  *" due.before:tomorrow count "*)
+    printf '2\n'
+    ;;
+  *" status:pending count "*)
+    printf '5\n'
+    ;;
+  *)
+    printf 'Due       Task\n'
+    printf 'overdue   Ship Omarchy Tasks preview\n'
+    printf 'today      Review plugin verification\n'
+    ;;
+esac
