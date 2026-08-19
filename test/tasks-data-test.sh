@@ -20,6 +20,7 @@ output=$(PATH="$mock_bin" /bin/bash "$helper")
 jq -e '
   .available == false and
   .tuiAvailable == false and
+  .readError == false and
   .total == 0 and
   .actionable == 0 and
   (.tooltip | contains("Left-click to install Taskwarrior"))
@@ -31,6 +32,7 @@ output=$(PATH="$mock_bin" /bin/bash "$helper")
 jq -e '
   .available == true and
   .tuiAvailable == false and
+  .readError == false and
   .total == 5 and
   .actionable == 2 and
   (.tooltip | contains("Taskwarrior TUI is not installed"))
@@ -42,6 +44,7 @@ output=$(PATH="$mock_bin" /bin/bash "$helper")
 jq -e '
   .available == true and
   .tuiAvailable == true and
+  .readError == false and
   .total == 5 and
   .actionable == 2 and
   (.tooltip | contains("Ship Omarchy Tasks preview")) and
@@ -52,6 +55,7 @@ output=$(TASK_FIXTURE_MODE=invalid-counts PATH="$mock_bin" /bin/bash "$helper")
 jq -e '
   .available == true and
   .tuiAvailable == true and
+  .readError == true and
   .total == 0 and
   .actionable == 0 and
   (.tooltip | contains("Taskwarrior data could not be read"))
@@ -61,6 +65,7 @@ output=$(TASK_FIXTURE_MODE=failure PATH="$mock_bin" /bin/bash "$helper")
 jq -e '
   .available == true and
   .tuiAvailable == true and
+  .readError == true and
   .total == 0 and
   .actionable == 0 and
   (.tooltip | contains("Taskwarrior data could not be read"))
@@ -69,6 +74,7 @@ jq -e '
 output=$(TASK_FIXTURE_MODE=escaped PATH="$mock_bin" /bin/bash "$helper")
 jq -e '
   .available == true and
+  .readError == false and
   (.tooltip | contains("Review \"quoted\" task \\ path")) and
   (.tooltip | contains("Preserve a second line"))
 ' <<<"$output" >/dev/null

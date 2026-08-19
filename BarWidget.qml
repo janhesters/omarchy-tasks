@@ -10,6 +10,7 @@ BarWidget {
 
   property bool taskwarriorAvailable: true
   property bool taskwarriorTuiAvailable: true
+  property bool taskReadError: false
   property int total: 0
   property int actionable: 0
   property string taskTooltip: "Loading Taskwarrior tasks..."
@@ -33,12 +34,14 @@ BarWidget {
       var data = JSON.parse(String(output || "{}"))
       root.taskwarriorAvailable = data.available === true
       root.taskwarriorTuiAvailable = data.tuiAvailable === true
+      root.taskReadError = data.readError === true
       root.total = Math.max(0, Number(data.total) || 0)
       root.actionable = Math.max(0, Number(data.actionable) || 0)
       root.taskTooltip = String(data.tooltip || "No pending tasks")
     } catch (error) {
       root.taskwarriorAvailable = false
       root.taskwarriorTuiAvailable = false
+      root.taskReadError = true
       root.total = 0
       root.actionable = 0
       root.taskTooltip = "Could not read Taskwarrior tasks"
@@ -64,7 +67,7 @@ BarWidget {
     return "open taskwarrior-tui"
   }
 
-  visible: !taskwarriorAvailable || !taskwarriorTuiAvailable || total > 0 || showWhenEmpty
+  visible: !taskwarriorAvailable || !taskwarriorTuiAvailable || taskReadError || total > 0 || showWhenEmpty
   implicitWidth: visible ? button.implicitWidth : 0
   implicitHeight: visible ? button.implicitHeight : 0
 
@@ -89,6 +92,7 @@ BarWidget {
       if (exitCode !== 0) {
         root.taskwarriorAvailable = false
         root.taskwarriorTuiAvailable = false
+        root.taskReadError = true
         root.taskTooltip = "Could not read Taskwarrior tasks"
       }
     }
@@ -106,14 +110,14 @@ BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
-    text: root.taskwarriorAvailable
+    text: root.taskwarriorAvailable && !root.taskReadError
       ? (root.total > 0 ? "\uf0ae  " + String(root.actionable > 0 ? root.actionable : root.total) : "\uf0ae")
       : "\uf071"
     fontSize: Style.font.caption
-    active: root.actionable > 0 || !root.taskwarriorAvailable || !root.taskwarriorTuiAvailable
+    active: root.actionable > 0 || !root.taskwarriorAvailable || !root.taskwarriorTuiAvailable || root.taskReadError
     activeColor: Color.urgent
     useActiveColor: true
-    dimmed: root.taskwarriorAvailable && root.taskwarriorTuiAvailable && root.total === 0
+    dimmed: root.taskwarriorAvailable && root.taskwarriorTuiAvailable && !root.taskReadError && root.total === 0
     tooltipText: root.taskTooltip + "\n\nLeft-click: " + root.primaryActionLabel() + " | Right-click: refresh"
     onPressed: function(buttonCode) {
       if (buttonCode === Qt.RightButton) root.refresh()
