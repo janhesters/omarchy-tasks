@@ -53,7 +53,8 @@ jq -e '
   .available == true and
   .tuiAvailable == true and
   .total == 0 and
-  .actionable == 0
+  .actionable == 0 and
+  (.tooltip | contains("Taskwarrior data could not be read"))
 ' <<<"$output" >/dev/null
 
 output=$(TASK_FIXTURE_MODE=failure PATH="$mock_bin" /bin/bash "$helper")
@@ -62,7 +63,7 @@ jq -e '
   .tuiAvailable == true and
   .total == 0 and
   .actionable == 0 and
-  .tooltip == "No pending tasks"
+  (.tooltip | contains("Taskwarrior data could not be read"))
 ' <<<"$output" >/dev/null
 
 output=$(TASK_FIXTURE_MODE=escaped PATH="$mock_bin" /bin/bash "$helper")
