@@ -52,7 +52,7 @@ omarchy-shell io.github.janhesters.tasks refresh
 - `taskwarrior-tui` provides the terminal interface opened on left-click.
 - `jq` serializes the helper output and ships with Omarchy.
 
-Normal task display is local and read-only. Package installation runs only after you explicitly left-click a missing-dependency warning, in a visible terminal, and may prompt for sudo.
+Normal task display is local and read-only. The plugin starts package installation only after you explicitly left-click a missing-dependency warning, in a visible terminal, and it may prompt for sudo.
 
 ## Update or remove
 
