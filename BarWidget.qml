@@ -50,9 +50,9 @@ BarWidget {
     if (!root.bar) return
 
     if (!root.taskwarriorAvailable) {
-      root.bar.run("omarchy launch floating terminal with presentation omarchy pkg add task taskwarrior-tui")
+      root.bar.run("omarchy launch floating terminal with presentation \"omarchy pkg add task taskwarrior-tui && omarchy-shell io.github.janhesters.tasks refresh\"")
     } else if (!root.taskwarriorTuiAvailable) {
-      root.bar.run("omarchy launch floating terminal with presentation omarchy pkg add taskwarrior-tui")
+      root.bar.run("omarchy launch floating terminal with presentation \"omarchy pkg add taskwarrior-tui && omarchy-shell io.github.janhesters.tasks refresh\"")
     } else {
       root.bar.run("omarchy launch or focus tui taskwarrior-tui")
     }
@@ -64,7 +64,7 @@ BarWidget {
     return "open taskwarrior-tui"
   }
 
-  visible: !taskwarriorAvailable || total > 0 || showWhenEmpty
+  visible: !taskwarriorAvailable || !taskwarriorTuiAvailable || total > 0 || showWhenEmpty
   implicitWidth: visible ? button.implicitWidth : 0
   implicitHeight: visible ? button.implicitHeight : 0
 
@@ -113,7 +113,7 @@ BarWidget {
     active: root.actionable > 0 || !root.taskwarriorAvailable || !root.taskwarriorTuiAvailable
     activeColor: Color.urgent
     useActiveColor: true
-    dimmed: root.taskwarriorAvailable && root.total === 0
+    dimmed: root.taskwarriorAvailable && root.taskwarriorTuiAvailable && root.total === 0
     tooltipText: root.taskTooltip + "\n\nLeft-click: " + root.primaryActionLabel() + " | Right-click: refresh"
     onPressed: function(buttonCode) {
       if (buttonCode === Qt.RightButton) root.refresh()

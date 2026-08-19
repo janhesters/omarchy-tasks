@@ -48,4 +48,28 @@ jq -e '
   (.tooltip | contains("Taskwarrior TUI is not installed") | not)
 ' <<<"$output" >/dev/null
 
+output=$(TASK_FIXTURE_MODE=invalid-counts PATH="$mock_bin" /bin/bash "$helper")
+jq -e '
+  .available == true and
+  .tuiAvailable == true and
+  .total == 0 and
+  .actionable == 0
+' <<<"$output" >/dev/null
+
+output=$(TASK_FIXTURE_MODE=failure PATH="$mock_bin" /bin/bash "$helper")
+jq -e '
+  .available == true and
+  .tuiAvailable == true and
+  .total == 0 and
+  .actionable == 0 and
+  .tooltip == "No pending tasks"
+' <<<"$output" >/dev/null
+
+output=$(TASK_FIXTURE_MODE=escaped PATH="$mock_bin" /bin/bash "$helper")
+jq -e '
+  .available == true and
+  (.tooltip | contains("Review \"quoted\" task \\ path")) and
+  (.tooltip | contains("Preserve a second line"))
+' <<<"$output" >/dev/null
+
 printf 'tasks-data tests passed\n'
