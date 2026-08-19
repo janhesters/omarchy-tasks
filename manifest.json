@@ -5,7 +5,7 @@
   "version": "2.1.0",
   "author": "Jan Hesters",
   "license": "MIT",
-  "description": "See due and overdue Taskwarrior counts in the bar, urgency-ranked tasks on hover, and taskwarrior-tui one click away.",
+  "description": "See due and overdue Taskwarrior counts in the bar, review urgency-ranked tasks on hover, and open taskwarrior-tui with one click.",
   "kinds": [
     "bar-widget"
   ],

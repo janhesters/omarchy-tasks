@@ -15,7 +15,7 @@ omarchy pkg add task taskwarrior-tui
 omarchy plugin add https://github.com/janhesters/omarchy-tasks.git --enable
 ```
 
-Omarchy plugins cannot install system packages. This is why the marketplace marks the plugin as requiring manual setup. If you add the plugin first, left-click its warning icon to open the same Omarchy package command in a terminal.
+The standard `omarchy plugin add … --enable` flow clones, validates, and enables the plugin but does not install system packages, so the marketplace marks this plugin as requiring manual setup. If you add the plugin first, left-click its warning icon to run the required Omarchy package installation in a visible terminal.
 
 ## What you get
 
@@ -52,7 +52,7 @@ omarchy-shell io.github.janhesters.tasks refresh
 - `taskwarrior-tui` provides the terminal interface opened on left-click.
 - `jq` serializes the helper output and ships with Omarchy.
 
-Normal task display is local and read-only. The plugin uses package management only when you explicitly left-click a missing-dependency warning; that action opens Omarchy's installer in a terminal for you to review.
+Normal task display is local and read-only. Package installation runs only after you explicitly left-click a missing-dependency warning, in a visible terminal, and may prompt for sudo.
 
 ## Update or remove
 

@@ -1,5 +1,14 @@
 #!/bin/bash
 
+if [[ ${TASK_FIXTURE_MODE:-} == failure ]]; then
+  exit 1
+fi
+
+if [[ ${TASK_FIXTURE_MODE:-} == invalid-counts && " $* " == *" count "* ]]; then
+  printf 'not-a-number\n'
+  exit 0
+fi
+
 case " $* " in
   *" due.before:tomorrow count "*)
     printf '2\n'
@@ -9,7 +18,12 @@ case " $* " in
     ;;
   *)
     printf 'Due       Task\n'
-    printf 'overdue   Ship Omarchy Tasks preview\n'
-    printf 'today      Review plugin verification\n'
+    if [[ ${TASK_FIXTURE_MODE:-} == escaped ]]; then
+      printf 'today     Review "quoted" task \\ path\n'
+      printf 'tomorrow  Preserve a second line\n'
+    else
+      printf 'overdue   Ship Omarchy Tasks preview\n'
+      printf 'today      Review plugin verification\n'
+    fi
     ;;
 esac
