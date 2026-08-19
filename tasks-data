@@ -4,13 +4,21 @@
 
 set -uo pipefail
 
+tui_available=false
+if command -v taskwarrior-tui >/dev/null 2>&1; then
+  tui_available=true
+fi
+
 if ! command -v task >/dev/null 2>&1; then
-  jq -cn '{
-    available: false,
-    total: 0,
-    actionable: 0,
-    tooltip: "Taskwarrior is not installed. Install it with: omarchy pkg add task taskwarrior-tui"
-  }'
+  jq -cn \
+    --argjson tuiAvailable "$tui_available" \
+    '{
+      available: false,
+      tuiAvailable: $tuiAvailable,
+      total: 0,
+      actionable: 0,
+      tooltip: "Taskwarrior is not installed.\n\nLeft-click to install Taskwarrior and its TUI."
+    }'
   exit 0
 fi
 
@@ -42,8 +50,19 @@ else
   tooltip="No pending tasks"
 fi
 
+if [[ $tui_available != true ]]; then
+  tooltip+=$'\n\nTaskwarrior TUI is not installed. Left-click to install it.'
+fi
+
 jq -cn \
   --argjson total "$total" \
   --argjson actionable "$actionable" \
+  --argjson tuiAvailable "$tui_available" \
   --arg tooltip "$tooltip" \
-  '{available: true, total: $total, actionable: $actionable, tooltip: $tooltip}'
+  '{
+    available: true,
+    tuiAvailable: $tuiAvailable,
+    total: $total,
+    actionable: $actionable,
+    tooltip: $tooltip
+  }'

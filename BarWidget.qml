@@ -9,6 +9,7 @@ BarWidget {
   moduleName: "io.github.janhesters.tasks"
 
   property bool taskwarriorAvailable: true
+  property bool taskwarriorTuiAvailable: true
   property int total: 0
   property int actionable: 0
   property string taskTooltip: "Loading Taskwarrior tasks..."
@@ -31,11 +32,13 @@ BarWidget {
     try {
       var data = JSON.parse(String(output || "{}"))
       root.taskwarriorAvailable = data.available === true
+      root.taskwarriorTuiAvailable = data.tuiAvailable === true
       root.total = Math.max(0, Number(data.total) || 0)
       root.actionable = Math.max(0, Number(data.actionable) || 0)
       root.taskTooltip = String(data.tooltip || "No pending tasks")
     } catch (error) {
       root.taskwarriorAvailable = false
+      root.taskwarriorTuiAvailable = false
       root.total = 0
       root.actionable = 0
       root.taskTooltip = "Could not read Taskwarrior tasks"
@@ -44,7 +47,21 @@ BarWidget {
   }
 
   function openTasks() {
-    if (root.bar) root.bar.run("omarchy launch or focus tui taskwarrior-tui")
+    if (!root.bar) return
+
+    if (!root.taskwarriorAvailable) {
+      root.bar.run("omarchy launch floating terminal with presentation omarchy pkg add task taskwarrior-tui")
+    } else if (!root.taskwarriorTuiAvailable) {
+      root.bar.run("omarchy launch floating terminal with presentation omarchy pkg add taskwarrior-tui")
+    } else {
+      root.bar.run("omarchy launch or focus tui taskwarrior-tui")
+    }
+  }
+
+  function primaryActionLabel() {
+    if (!root.taskwarriorAvailable) return "install Taskwarrior"
+    if (!root.taskwarriorTuiAvailable) return "install taskwarrior-tui"
+    return "open taskwarrior-tui"
   }
 
   visible: !taskwarriorAvailable || total > 0 || showWhenEmpty
@@ -71,6 +88,7 @@ BarWidget {
     onExited: function(exitCode) {
       if (exitCode !== 0) {
         root.taskwarriorAvailable = false
+        root.taskwarriorTuiAvailable = false
         root.taskTooltip = "Could not read Taskwarrior tasks"
       }
     }
@@ -92,11 +110,11 @@ BarWidget {
       ? (root.total > 0 ? "\uf0ae  " + String(root.actionable > 0 ? root.actionable : root.total) : "\uf0ae")
       : "\uf071"
     fontSize: Style.font.caption
-    active: root.actionable > 0 || !root.taskwarriorAvailable
+    active: root.actionable > 0 || !root.taskwarriorAvailable || !root.taskwarriorTuiAvailable
     activeColor: Color.urgent
     useActiveColor: true
     dimmed: root.taskwarriorAvailable && root.total === 0
-    tooltipText: root.taskTooltip + "\n\nLeft-click: open taskwarrior-tui | Right-click: refresh"
+    tooltipText: root.taskTooltip + "\n\nLeft-click: " + root.primaryActionLabel() + " | Right-click: refresh"
     onPressed: function(buttonCode) {
       if (buttonCode === Qt.RightButton) root.refresh()
       else if (buttonCode === Qt.LeftButton) root.openTasks()
