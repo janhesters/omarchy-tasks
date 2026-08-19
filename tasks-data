@@ -15,6 +15,7 @@ if ! command -v task >/dev/null 2>&1; then
     '{
       available: false,
       tuiAvailable: $tuiAvailable,
+      readError: false,
       total: 0,
       actionable: 0,
       tooltip: "Taskwarrior is not installed.\n\nLeft-click to install Taskwarrior and its TUI."
@@ -81,10 +82,12 @@ jq -cn \
   --argjson total "$total" \
   --argjson actionable "$actionable" \
   --argjson tuiAvailable "$tui_available" \
+  --argjson readError "$read_error" \
   --arg tooltip "$tooltip" \
   '{
     available: true,
     tuiAvailable: $tuiAvailable,
+    readError: $readError,
     total: $total,
     actionable: $actionable,
     tooltip: $tooltip

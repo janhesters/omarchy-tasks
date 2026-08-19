@@ -14,8 +14,12 @@ assert_contains() {
   fi
 }
 
-assert_contains 'visible: !taskwarriorAvailable || !taskwarriorTuiAvailable || total > 0 || showWhenEmpty'
-assert_contains 'dimmed: root.taskwarriorAvailable && root.taskwarriorTuiAvailable && root.total === 0'
+assert_contains 'property bool taskReadError: false'
+assert_contains 'root.taskReadError = data.readError === true'
+assert_contains 'visible: !taskwarriorAvailable || !taskwarriorTuiAvailable || taskReadError || total > 0 || showWhenEmpty'
+assert_contains 'text: root.taskwarriorAvailable && !root.taskReadError'
+assert_contains 'active: root.actionable > 0 || !root.taskwarriorAvailable || !root.taskwarriorTuiAvailable || root.taskReadError'
+assert_contains 'dimmed: root.taskwarriorAvailable && root.taskwarriorTuiAvailable && !root.taskReadError && root.total === 0'
 assert_contains 'omarchy launch floating terminal with presentation \"omarchy pkg add task taskwarrior-tui && omarchy-shell io.github.janhesters.tasks refresh\"'
 assert_contains 'omarchy launch floating terminal with presentation \"omarchy pkg add taskwarrior-tui && omarchy-shell io.github.janhesters.tasks refresh\"'
 
