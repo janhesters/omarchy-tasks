@@ -52,7 +52,7 @@ omarchy-shell io.github.janhesters.tasks refresh
 - `taskwarrior-tui` provides the terminal interface opened on left-click.
 - `jq` serializes the helper output and ships with Omarchy.
 
-The plugin uses no network access or privileged commands. It reads your local Taskwarrior database and leaves it unchanged.
+Normal task display is local and read-only. The plugin uses package management only when you explicitly left-click a missing-dependency warning; that action opens Omarchy's installer in a terminal for you to review.
 
 ## Update or remove
 
