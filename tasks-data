@@ -29,22 +29,45 @@ normalize_count() {
   esac
 }
 
-actionable_raw=$(task rc.color=off status:pending due.before:tomorrow count 2>/dev/null || printf '0')
-total_raw=$(task rc.color=off status:pending count 2>/dev/null || printf '0')
+read_error=false
+
+if ! actionable_raw=$(task rc.color=off status:pending due.before:tomorrow count 2>/dev/null); then
+  actionable_raw=0
+  read_error=true
+fi
+
+if ! total_raw=$(task rc.color=off status:pending count 2>/dev/null); then
+  total_raw=0
+  read_error=true
+fi
+
+case "$actionable_raw" in
+  ''|*[!0-9]*) read_error=true ;;
+esac
+
+case "$total_raw" in
+  ''|*[!0-9]*) read_error=true ;;
+esac
+
 actionable=$(normalize_count "$actionable_raw")
 total=$(normalize_count "$total_raw")
 
-list=$(task \
-  rc.color=off \
-  rc.verbose=nothing \
-  rc.defaultwidth=0 \
-  rc.report.omarchy.description=Omarchy \
-  rc.report.omarchy.columns=due.relative,description.count \
-  rc.report.omarchy.labels=Due,Task \
-  rc.report.omarchy.sort=urgency- \
-  status:pending limit:10 omarchy 2>/dev/null || true)
+if ! list=$(task \
+    rc.color=off \
+    rc.verbose=nothing \
+    rc.defaultwidth=0 \
+    rc.report.omarchy.description=Omarchy \
+    rc.report.omarchy.columns=due.relative,description.count \
+    rc.report.omarchy.labels=Due,Task \
+    rc.report.omarchy.sort=urgency- \
+    status:pending limit:10 omarchy 2>/dev/null); then
+  list=""
+  read_error=true
+fi
 
-if [[ -n $list ]]; then
+if [[ $read_error == true ]]; then
+  tooltip="Taskwarrior data could not be read. Run task in a terminal to inspect the error, then right-click to refresh."
+elif [[ -n $list ]]; then
   tooltip="$total pending | $actionable due today/overdue"$'\n\n'"$list"
 else
   tooltip="No pending tasks"
